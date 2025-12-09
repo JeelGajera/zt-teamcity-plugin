@@ -14,12 +14,29 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 
 public class ScanService {
-    private static final String SCAN_API_URL = "https://api.zerothreat.ai/api/scan/devops";
+    private static final String SCAN_API_URL = "https://api.zerothreat.ai";
+    private final String baseUrl;
 
-    public static ScanResponse initiateScan(String token, BuildProgressLogger logger) throws Exception {
+    public ScanService() {
+        this.baseUrl = SCAN_API_URL;
+    }
+
+    public  ScanService(String baseUrl) {
+        if (baseUrl != null && !baseUrl.isEmpty()) {
+            this.baseUrl = baseUrl;
+        } else {
+            this.baseUrl = SCAN_API_URL;
+        }
+    }
+
+    private String ztServerUrl() {
+        return this.baseUrl + "/api/scan/devops";
+    }
+
+    public ScanResponse initiateScan(String token, BuildProgressLogger logger) throws Exception {
         try {
             String requestBody = "{\"token\":\"" + token + "\"}";
-            HttpURLConnection conn = (HttpURLConnection) new URL(SCAN_API_URL).openConnection();
+            HttpURLConnection conn = (HttpURLConnection) new URL(this.ztServerUrl()).openConnection();
             conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setDoOutput(true);
@@ -44,12 +61,12 @@ public class ScanService {
         }
     }
 
-    public static boolean pollScanStatus(String token, BuildProgressLogger logger) {
+    public boolean pollScanStatus(String token, BuildProgressLogger logger) {
         int status = 1;
         while (status < 4) {
             try {
                 TimeUnit.SECONDS.sleep(10);
-                HttpURLConnection conn = (HttpURLConnection) new URL(SCAN_API_URL + "/" + token).openConnection();
+                HttpURLConnection conn = (HttpURLConnection) new URL(this.ztServerUrl() + "/" + token).openConnection();
                 conn.setRequestMethod("GET");
 
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));

@@ -7,6 +7,7 @@
     <description>Scan for security issues in web applications/APIs</description>
     <download-url>Plugin download URL</download-url>
     <email>hello@zerothreat.ai</email>
+    <source-url>https://github.com/zerothreatai/teamcity</source-url>
     <vendor>
       <name>@VendorName@</name>
       <url>@VendorURL@</url>
